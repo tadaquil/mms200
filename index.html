@@ -1,78 +1,70 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>AR Model Viewer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.loaders.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.min.js"></script>
-  <style>body { margin: 0; overflow: hidden; }</style>
-</head>
-<body>
-  <a-scene
-    embedded
-    arjs="sourceType: webcam; debugUIEnabled: false;"
-    renderer="colorManagement: true; physicallyCorrectLights: true;"
-    vr-mode-ui="enabled: false">
+  <head>
+    <title>AR Button + Model</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.loaders.min.js"></script>
+    <style>body { margin: 0; overflow: hidden; }</style>
+  </head>
+  <body>
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true;">
+      
+      <!-- Assets -->
+      <a-assets>
+        <a-asset-item id="model" src="trial13.glb"></a-asset-item>
+        <img id="btnImg" src="start.png">
+      </a-assets>
 
-    <!-- Assets -->
-    <a-assets>
-      <a-asset-item id="myModel" src="trial13.glb"></a-asset-item>
-      <img id="buttonImage" src="start.png">
-    </a-assets>
-
-    <!-- Marker -->
-    <a-marker preset="hiro">
-      <a-entity id="modelContainer">
-
-        <!-- GLB model (initially hidden) -->
-        <a-entity id="model"
-          gltf-model="#myModel"
-          position="0 0 0"
-          rotation="-90 0 0"
-          scale="0.7 0.5 0.5"
-          visible="false"
-          animation-mixer>
+      <!-- Marker -->
+      <a-marker preset="hiro">
+        <!-- Model (hidden by default) -->
+        <a-entity id="glbModel"
+                  gltf-model="#model"
+                  position="0 0 0"
+                  rotation="-90 0 0"
+                  scale="0.7 0.5 0.5"
+                  visible="false"
+                  animation-mixer>
         </a-entity>
 
-        <!-- Start Button (Upright and Clickable) -->
-        <a-image id="showButton"
-          src="#buttonImage"
-          class="clickable"
-          position="0 0 0.5"
-          rotation="0 0 0"
-          scale="1 0.5 1"
-          geometry="primitive: plane; height: 0.5; width: 1"
-          material="shader: flat; src: #buttonImage">
+        <!-- Start Button -->
+        <a-image id="startBtn"
+                 src="#btnImg"
+                 class="clickable"
+                 position="0 0 0.5"
+                 rotation="0 0 0"
+                 scale="1 0.5 1"
+                 geometry="primitive: plane; height: 0.5; width: 1"
+                 material="shader: flat; src: #btnImg">
         </a-image>
+      </a-marker>
 
+      <!-- Camera with raycasting -->
+      <a-entity camera
+                cursor="rayOrigin: mouse"
+                raycaster="objects: .clickable">
       </a-entity>
+    </a-scene>
 
-      <!-- Lights -->
-      <a-light type="directional" intensity="1" position="1 1 0.5"></a-light>
-      <a-light type="ambient" intensity="0.5"></a-light>
-    </a-marker>
+    <script>
+      AFRAME.registerComponent('start-click', {
+        init: function () {
+          this.el.addEventListener('click', () => {
+            document.querySelector('#glbModel').setAttribute('visible', 'true');
+            this.el.setAttribute('visible', 'false');
+          });
+        }
+      });
 
-    <!-- Camera with raycaster for touch -->
-    <a-entity camera look-controls raycaster="objects: .clickable" cursor="rayOrigin: mouse"></a-entity>
-  </a-scene>
-
-  <!-- Script for tap interaction -->
-  <script>
-    AFRAME.registerComponent('show-model-on-tap', {
-      init: function () {
-        const button = this.el;
-        const model = document.querySelector('#model');
-        this.el.addEventListener('click', function () {
-          model.setAttribute('visible', true);
-          button.setAttribute('visible', false);
-        });
-      }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelector('#showButton').setAttribute('show-model-on-tap', '');
-    });
-  </script>
-</body>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('#startBtn').setAttribute('start-click', '');
+      });
+    </script>
+  </body>
 </html>
