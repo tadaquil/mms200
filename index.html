@@ -1,110 +1,75 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>AR with Palm Trigger</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.loaders.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/handtrackjs@0.4.1/dist/handtrack.min.js"></script>
-  <style>body { margin: 0; overflow: hidden; }</style>
-</head>
-<body>
-  <a-scene
-    embedded
-    arjs="sourceType: webcam; debugUIEnabled: false;"
-    renderer="colorManagement: true; physicallyCorrectLights: true;"
-    vr-mode-ui="enabled: false">
+  <head>
+    <title>AR Model Viewer</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.loaders.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+      renderer="colorManagement: true; physicallyCorrectLights: true;"
+      vr-mode-ui="enabled: false">
 
-    <!-- Assets -->
-    <a-assets>
-      <a-asset-item id="myModel" src="trial13.glb"></a-asset-item>
-      <img id="startButtonImage" src="start.png">
-    </a-assets>
+      <!-- Assets -->
+      <a-assets>
+        <a-asset-item id="myModel" src="trial13.glb"></a-asset-item>
+        <img id="startButtonImage" src="start.png">
+      </a-assets>
 
-    <!-- Marker -->
-    <a-marker preset="hiro" id="marker">
-      <a-entity id="modelContainer">
+      <!-- Marker -->
+      <a-marker preset="hiro" id="marker">
+        <a-entity id="modelContainer">
 
-        <!-- 3D Model (hidden initially) -->
-        <a-entity id="model"
-          gltf-model="#myModel"
-          position="0 0 0"
-          scale="0.7 0.5 0.5"
-          rotation="-90 0 0"
-          visible="false"
-          animation-mixer>
+          <!-- 3D Model (hidden initially) -->
+          <a-entity id="model"
+            gltf-model="#myModel"
+            position="0 0 0"
+            scale="0.7 0.5 0.5"
+            rotation="-90 0 0"
+            visible="false"
+            animation-mixer>
+          </a-entity>
+
+          <!-- Start Button -->
+          <a-image id="startButton"
+            src="#startButtonImage"
+            position="0 0 0.01"
+            rotation="-90 0 0"
+            scale="1 0.5 1"
+            geometry="primitive: plane; height: 0.5; width: 1"
+            material="shader: flat; src: #startButtonImage"
+            visible="true">
+          </a-image>
+
         </a-entity>
 
-        <!-- Start Button -->
-        <a-image id="startButton"
-          src="#startButtonImage"
-          position="0 0 0.01"
-          rotation="-90 0 0"
-          scale="1 0.5 1"
-          geometry="primitive: plane; height: 0.5; width: 1"
-          material="shader: flat; src: #startButtonImage"
-          visible="true">
-        </a-image>
+        <!-- Lights -->
+        <a-light type="directional" intensity="1" position="1 1 0.5"></a-light>
+        <a-light type="ambient" intensity="0.5"></a-light>
+      </a-marker>
 
-      </a-entity>
+      <!-- Camera -->
+      <a-entity camera look-controls raycaster="objects: .clickable" cursor="rayOrigin: mouse"></a-entity>
+    </a-scene>
 
-      <!-- Lights -->
-      <a-light type="directional" intensity="1" position="1 1 0.5"></a-light>
-      <a-light type="ambient" intensity="0.5"></a-light>
-    </a-marker>
+    <!-- Script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const startButton = document.querySelector('#startButton');
+        const model = document.querySelector('#model');
 
-    <!-- Camera -->
-    <a-entity camera></a-entity>
-  </a-scene>
-
-  <!-- Script -->
-  <script>
-    let model = null;
-    let handDetected = false;
-
-    // Wait for A-Frame + AR.js to initialize fully
-    window.addEventListener('DOMContentLoaded', () => {
-      const arVideo = document.querySelector('video');
-
-      // Wait until the video feed from AR.js is ready
-      const checkVideoReady = setInterval(() => {
-        if (arVideo && arVideo.readyState === 4) {
-          clearInterval(checkVideoReady);
-          startHandDetection(arVideo);
-        }
-      }, 500);
-    });
-
-    function startHandDetection(video) {
-      handTrack.load({
-        flipHorizontal: true,
-        maxNumBoxes: 1,
-        scoreThreshold: 0.75
-      }).then(lModel => {
-        model = lModel;
-        detectLoop(video);
-      });
-    }
-
-    function detectLoop(video) {
-      const marker = document.querySelector('#marker');
-      const button = document.querySelector('#startButton');
-      const modelEntity = document.querySelector('#model');
-
-      const interval = setInterval(() => {
-        if (!model || !marker.object3D.visible || handDetected) return;
-
-        model.detect(video).then(predictions => {
-          if (predictions.length > 0) {
-            handDetected = true;
-            button.setAttribute('visible', false);
-            modelEntity.setAttribute('visible', true);
-            clearInterval(interval);
-          }
+        startButton.addEventListener('click', () => {
+          startButton.setAttribute('visible', 'false');
+          model.setAttribute('visible', 'true');
         });
-      }, 600);
-    }
-  </script>
-</body>
+      });
+    </script>
+  </body>
 </html>
