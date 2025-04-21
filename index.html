@@ -26,6 +26,7 @@
     <!-- Marker -->
     <a-marker preset="hiro">
       <a-entity id="modelContainer">
+
         <!-- 3D Model (initially hidden) -->
         <a-entity id="model"
           gltf-model="#myModel"
@@ -38,14 +39,17 @@
           material="color: #f9e9dc; envMapIntensity: 0.55; roughness: 0.9; metalness: 0">
         </a-entity>
 
-        <!-- PNG Button facing forward -->
+        <!-- PNG Button (facing forward) -->
         <a-image id="showButton"
           src="#buttonImage"
           position="0 0.5 0.5"
-          rotation="-90 0 0"
+          rotation="0 0 0"
           scale="1 0.5 1"
-          class="clickable">
+          class="clickable"
+          geometry="primitive: plane; height: 0.5; width: 1"
+          material="shader: flat; src: #buttonImage">
         </a-image>
+
       </a-entity>
 
       <!-- Lights -->
@@ -55,9 +59,9 @@
       <a-light type="ambient" color="#ffffff" intensity="0.3"></a-light>
     </a-marker>
 
-    <!-- Camera with cursor for touch interaction -->
+    <!-- Camera with cursor -->
     <a-entity camera>
-      <a-cursor 
+      <a-cursor
         raycaster="objects: .clickable"
         fuse="false"
         material="color: white; shader: flat">
