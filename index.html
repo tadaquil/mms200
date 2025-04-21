@@ -32,7 +32,7 @@
           gltf-model="#myModel"
           position="0 0 0"
           scale="0.7 0.5 0.5"
-          rotation="90 0 0"
+          rotation="-90 0 0"
           visible="false"
           animation-mixer>
         </a-entity>
@@ -41,8 +41,8 @@
         <a-image id="startButton"
           src="#startButtonImage"
           class="clickable"
-          position="0 0 0.01"              <!-- just above the marker surface -->
-          rotation="0 0 0"               <!-- flat, aligned with marker plane -->
+          position="0 0 0"
+          rotation="-90 0 0"               
           scale="1 0.5 1"
           geometry="primitive: plane; height: 0.5; width: 1"
           material="shader: flat; src: #startButtonImage">
