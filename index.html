@@ -2,10 +2,10 @@
 <html>
 <head>
   <title>AR Model Viewer</title>
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.loaders.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.min.js"></script>
   <style>
     body { margin: 0; overflow: hidden; }
   </style>
@@ -27,7 +27,7 @@
     <a-marker preset="hiro">
       <a-entity id="modelContainer">
 
-        <!-- 3D Model (initially hidden) -->
+        <!-- 3D Model (hidden initially) -->
         <a-entity id="model"
           gltf-model="#myModel"
           position="0 0 0"
@@ -35,19 +35,17 @@
           rotation="-90 0 0"
           visible="false"
           animation-mixer
-          shadow="cast: true; receive: false"
-          material="color: #f9e9dc; envMapIntensity: 0.55; roughness: 0.9; metalness: 0">
+          shadow="cast: true; receive: false">
         </a-entity>
 
-        <!-- PNG Button (facing forward) -->
+        <!-- PNG Button (upright & clickable) -->
         <a-image id="showButton"
           src="#buttonImage"
           position="0 0.5 0.5"
           rotation="0 0 0"
           scale="1 0.5 1"
           class="clickable"
-          geometry="primitive: plane; height: 0.5; width: 1"
-          material="shader: flat; src: #buttonImage">
+          show-model-on-click>
         </a-image>
 
       </a-entity>
@@ -59,26 +57,27 @@
       <a-light type="ambient" color="#ffffff" intensity="0.3"></a-light>
     </a-marker>
 
-    <!-- Camera with cursor -->
+    <!-- Camera with cursor for touch/click -->
     <a-entity camera>
       <a-cursor
-        raycaster="objects: .clickable"
         fuse="false"
+        raycaster="objects: .clickable"
         material="color: white; shader: flat">
       </a-cursor>
     </a-entity>
   </a-scene>
 
-  <!-- Script -->
+  <!-- Custom Component for Button Click -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const button = document.querySelector('#showButton');
-      const model = document.querySelector('#model');
-
-      button.addEventListener('click', () => {
-        model.setAttribute('visible', 'true');
-        button.setAttribute('visible', 'false');
-      });
+    AFRAME.registerComponent('show-model-on-click', {
+      init: function () {
+        this.el.addEventListener('click', () => {
+          const model = document.querySelector('#model');
+          const button = this.el;
+          model.setAttribute('visible', true);
+          button.setAttribute('visible', false);
+        });
+      }
     });
   </script>
 </body>
