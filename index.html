@@ -27,7 +27,7 @@
     <a-marker preset="hiro">
       <a-entity id="modelContainer">
 
-        <!-- 3D Model (hidden initially) -->
+        <!-- Model (hidden initially) -->
         <a-entity id="model"
           gltf-model="#myModel"
           position="0 0 0"
@@ -38,14 +38,13 @@
           shadow="cast: true; receive: false">
         </a-entity>
 
-        <!-- PNG Button (upright & clickable) -->
+        <!-- Button image - upright and clickable -->
         <a-image id="showButton"
           src="#buttonImage"
-          position="0 0.5 0.5"
+          position="0 0 0.5"
           rotation="0 0 0"
           scale="1 0.5 1"
-          class="clickable"
-          show-model-on-click>
+          class="clickable">
         </a-image>
 
       </a-entity>
@@ -57,27 +56,30 @@
       <a-light type="ambient" color="#ffffff" intensity="0.3"></a-light>
     </a-marker>
 
-    <!-- Camera with cursor for touch/click -->
-    <a-entity camera>
-      <a-cursor
-        fuse="false"
-        raycaster="objects: .clickable"
-        material="color: white; shader: flat">
-      </a-cursor>
-    </a-entity>
+    <!-- Camera -->
+    <a-entity id="cameraRig" camera look-controls cursor="rayOrigin: mouse"></a-entity>
   </a-scene>
 
-  <!-- Custom Component for Button Click -->
+  <!-- Manual Raycast Tap Detection -->
   <script>
-    AFRAME.registerComponent('show-model-on-click', {
+    AFRAME.registerComponent('tap-to-show-model', {
       init: function () {
-        this.el.addEventListener('click', () => {
-          const model = document.querySelector('#model');
-          const button = this.el;
-          model.setAttribute('visible', true);
-          button.setAttribute('visible', false);
+        const button = this.el;
+        const model = document.querySelector('#model');
+
+        this.el.sceneEl.addEventListener('click', function (evt) {
+          const intersection = evt.detail.intersectedEl;
+          if (intersection === button) {
+            model.setAttribute('visible', true);
+            button.setAttribute('visible', false);
+          }
         });
       }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const showButton = document.querySelector('#showButton');
+      showButton.setAttribute('tap-to-show-model', ''); // Attach component
     });
   </script>
 </body>
