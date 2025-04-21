@@ -6,9 +6,7 @@
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.loaders.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.min.js"></script>
-  <style>
-    body { margin: 0; overflow: hidden; }
-  </style>
+  <style>body { margin: 0; overflow: hidden; }</style>
 </head>
 <body>
   <a-scene
@@ -27,59 +25,53 @@
     <a-marker preset="hiro">
       <a-entity id="modelContainer">
 
-        <!-- Model (hidden initially) -->
+        <!-- GLB model (initially hidden) -->
         <a-entity id="model"
           gltf-model="#myModel"
           position="0 0 0"
-          scale="0.7 0.5 0.5"
           rotation="-90 0 0"
+          scale="0.7 0.5 0.5"
           visible="false"
-          animation-mixer
-          shadow="cast: true; receive: false">
+          animation-mixer>
         </a-entity>
 
-        <!-- Button image - upright and clickable -->
+        <!-- Start Button (Upright and Clickable) -->
         <a-image id="showButton"
           src="#buttonImage"
+          class="clickable"
           position="0 0 0.5"
           rotation="0 0 0"
           scale="1 0.5 1"
-          class="clickable">
+          geometry="primitive: plane; height: 0.5; width: 1"
+          material="shader: flat; src: #buttonImage">
         </a-image>
 
       </a-entity>
 
       <!-- Lights -->
-      <a-light type="directional" color="#fff8e5" intensity="1.3" position="1.5 4 2"></a-light>
-      <a-light type="directional" color="#ffffff" intensity="0.7" position="0 1.5 3"></a-light>
-      <a-light type="hemisphere" color="#e6f7ff" ground-color="#f4f0e8" intensity="0.6"></a-light>
-      <a-light type="ambient" color="#ffffff" intensity="0.3"></a-light>
+      <a-light type="directional" intensity="1" position="1 1 0.5"></a-light>
+      <a-light type="ambient" intensity="0.5"></a-light>
     </a-marker>
 
-    <!-- Camera -->
-    <a-entity id="cameraRig" camera look-controls cursor="rayOrigin: mouse"></a-entity>
+    <!-- Camera with raycaster for touch -->
+    <a-entity camera look-controls raycaster="objects: .clickable" cursor="rayOrigin: mouse"></a-entity>
   </a-scene>
 
-  <!-- Manual Raycast Tap Detection -->
+  <!-- Script for tap interaction -->
   <script>
-    AFRAME.registerComponent('tap-to-show-model', {
+    AFRAME.registerComponent('show-model-on-tap', {
       init: function () {
         const button = this.el;
         const model = document.querySelector('#model');
-
-        this.el.sceneEl.addEventListener('click', function (evt) {
-          const intersection = evt.detail.intersectedEl;
-          if (intersection === button) {
-            model.setAttribute('visible', true);
-            button.setAttribute('visible', false);
-          }
+        this.el.addEventListener('click', function () {
+          model.setAttribute('visible', true);
+          button.setAttribute('visible', false);
         });
       }
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const showButton = document.querySelector('#showButton');
-      showButton.setAttribute('tap-to-show-model', ''); // Attach component
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelector('#showButton').setAttribute('show-model-on-tap', '');
     });
   </script>
 </body>
