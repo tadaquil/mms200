@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AR with Mouse Click</title>
+  <title>AR with Mouse Click (Final Fix)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.loaders.min.js"></script>
@@ -24,10 +24,10 @@
     </a-assets>
 
     <!-- Marker -->
-    <a-marker preset="hiro">
+    <a-marker preset="hiro" id="marker">
       <a-entity id="modelContainer">
 
-        <!-- 3D Model (initially hidden) -->
+        <!-- 3D Model (hidden initially) -->
         <a-entity id="model"
           gltf-model="#myModel"
           position="0 0 0"
@@ -37,42 +37,49 @@
           animation-mixer>
         </a-entity>
 
-        <!-- PNG Button (flat, clickable) -->
+        <!-- Clickable Button -->
         <a-image id="startButton"
           src="#startButtonImage"
-          class="clickable"
           position="0 0 0.01"
           rotation="-90 0 0"
           scale="1 0.5 1"
-          material="shader: flat; src: #startButtonImage"
+          class="clickable"
+          material="shader: flat"
           geometry="primitive: plane; height: 0.5; width: 1"
           visible="true">
         </a-image>
 
       </a-entity>
 
-      <!-- Lights -->
       <a-light type="directional" intensity="1" position="1 1 0.5"></a-light>
       <a-light type="ambient" intensity="0.5"></a-light>
     </a-marker>
 
-    <!-- Camera + Cursor (for mouse interaction) -->
-    <a-entity camera look-controls raycaster="objects: .clickable" cursor="rayOrigin: mouse"></a-entity>
+    <!-- Camera + Cursor -->
+    <a-entity camera>
+      <a-cursor
+        raycaster="objects: .clickable"
+        fuse="false"
+        material="color: white; shader: flat">
+      </a-cursor>
+    </a-entity>
   </a-scene>
 
+  <!-- JS Logic -->
   <script>
     AFRAME.registerComponent('click-to-show', {
       init: function () {
         this.el.addEventListener('click', () => {
-          document.querySelector('#model').setAttribute('visible', true);
-          document.querySelector('#startButton').setAttribute('visible', false);
+          const model = document.querySelector('#model');
+          const button = document.querySelector('#startButton');
+          model.setAttribute('visible', 'true');
+          button.setAttribute('visible', 'false');
         });
       }
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-      const button = document.querySelector('#startButton');
-      button.setAttribute('click-to-show', '');
+      document.querySelector('#startButton').setAttribute('click-to-show', '');
     });
   </script>
 </body>
