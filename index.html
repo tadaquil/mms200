@@ -20,18 +20,31 @@
         <!-- Assets -->
         <a-assets>
             <a-asset-item id="myModel" src="trial13.glb"></a-asset-item>
+            <img id="buttonImage" src="next-button.png">
         </a-assets>
 
-        <!-- Hiro Marker (hidden instructions, but still works) -->
+        <!-- Hiro Marker -->
         <a-marker preset="hiro">
-            <a-entity
-                gltf-model="#myModel"
-                position="0 0 0"
-                scale="0.7 0.5 0.5"
-                rotation="-90 0 0"
-                animation-mixer="clip: *; loop: repeat"
-                shadow="cast: true; receive: false"
-                material="color: #f9e9dc; envMapIntensity: 0.55; roughness: 0.9; metalness: 0">
+            <a-entity id="modelContainer">
+                <!-- 3D Model (hidden by default) -->
+                <a-entity id="model"
+                    gltf-model="#myModel"
+                    position="0 0 0"
+                    scale="0.7 0.5 0.5"
+                    rotation="-90 0 0"
+                    visible="false"
+                    animation-mixer="clip: *; loop: repeat"
+                    shadow="cast: true; receive: false"
+                    material="color: #f9e9dc; envMapIntensity: 0.55; roughness: 0.9; metalness: 0">
+                </a-entity>
+
+                <!-- PNG Button -->
+                <a-image id="showButton"
+                    src="#buttonImage"
+                    position="0 0.5 0"
+                    scale="1 0.5 1"
+                    look-at="[camera]">
+                </a-image>
             </a-entity>
 
             <!-- Lighting -->
@@ -44,5 +57,18 @@
         <!-- Camera -->
         <a-entity camera></a-entity>
     </a-scene>
+
+    <!-- Interaction Script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const button = document.querySelector('#showButton');
+        const model = document.querySelector('#model');
+
+        button.addEventListener('click', () => {
+          model.setAttribute('visible', 'true');
+          button.setAttribute('visible', 'false');
+        });
+      });
+    </script>
 </body>
 </html>
